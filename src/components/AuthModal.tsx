@@ -27,6 +27,19 @@ export const AuthModal = ({ mode, onClose, onSuccess, onSwitchMode }: AuthModalP
     setIsLoading(true);
     setError(null);
     
+    // Basic input validation
+    if (!email || !email.includes('@')) {
+      setError('Please enter a valid email address');
+      setIsLoading(false);
+      return;
+    }
+    
+    if (!password || password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setIsLoading(false);
+      return;
+    }
+    
     try {
       if (mode === 'signup') {
         if (password !== confirmPassword) {
@@ -35,7 +48,7 @@ export const AuthModal = ({ mode, onClose, onSuccess, onSwitchMode }: AuthModalP
         }
 
         const { data, error: signUpError } = await supabase.auth.signUp({
-          email,
+          email: email.trim().toLowerCase(),
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/`
@@ -55,12 +68,11 @@ export const AuthModal = ({ mode, onClose, onSuccess, onSwitchMode }: AuthModalP
 
         // If we have a session, the user is logged in immediately
         if (data.session) {
-          console.log('User signed up with session:', data.session.user.id);
           onSuccess();
         }
       } else {
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
+          email: email.trim().toLowerCase(),
           password
         });
 
@@ -70,7 +82,6 @@ export const AuthModal = ({ mode, onClose, onSuccess, onSwitchMode }: AuthModalP
         }
 
         if (data.session) {
-          console.log('User signed in:', data.session.user.id);
           onSuccess();
         }
       }

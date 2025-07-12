@@ -4,10 +4,30 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
 
+// More restrictive CORS - only allow specific origins in production
+const allowedOrigins = Deno.env.get('ALLOWED_ORIGINS')?.split(',') || ['*'];
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': allowedOrigins.includes('*') ? '*' : allowedOrigins[0],
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
+
+// Input validation function
+function validateInput(message: any, userData: any): { isValid: boolean; error?: string } {
+  if (!message || typeof message !== 'string') {
+    return { isValid: false, error: 'Message must be a non-empty string' };
+  }
+  
+  if (message.length > 1000) {
+    return { isValid: false, error: 'Message too long (max 1000 characters)' };
+  }
+  
+  if (userData && typeof userData !== 'object') {
+    return { isValid: false, error: 'Invalid user data format' };
+  }
+  
+  return { isValid: true };
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -15,11 +35,28 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
   try {
     const { message, userData } = await req.json();
     
-    console.log('Received chat message:', message);
-    console.log('User data provided:', !!userData);
+    // Input validation
+    const validation = validateInput(message, userData);
+    if (!validation.isValid) {
+      return new Response(JSON.stringify({ error: validation.error }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Reduced logging for security
+    console.log('Chat request received');
     console.log('Gemini API Key exists:', !!geminiApiKey);
 
     if (!geminiApiKey) {
@@ -106,12 +143,10 @@ Current user message: ${message}`
       body: JSON.stringify(requestBody),
     });
 
-    console.log('Gemini API response status:', response.status);
-    
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Gemini API error details:', errorText);
-      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+      console.error('Gemini API error:', response.status);
+      throw new Error(`Gemini API error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -119,17 +154,14 @@ Current user message: ${message}`
     
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I could not generate a response.';
 
-    console.log('Reply generated successfully');
-
     return new Response(JSON.stringify({ reply }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error in chat-with-gemini function:', error);
-    console.error('Error details:', error.message);
+    console.error('Error in chat-with-gemini function:', error.message);
     return new Response(JSON.stringify({ 
-      error: error.message,
-      details: 'Check function logs for more information'
+      error: 'Internal server error',
+      details: 'Please try again later'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
