@@ -47,15 +47,15 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
 
   return (
     <div className="space-y-6">
-      <Card className="p-6 bg-white/80 backdrop-blur-sm">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+      <Card className="p-6 bg-white border border-gray-200">
+        <h2 className="text-2xl font-bold text-black mb-6">
           Daily Log - {selectedDate.toLocaleDateString()}
         </h2>
 
         <div className="space-y-8">
           {/* Flow Tracking */}
           <div>
-            <Label className="text-base font-semibold text-gray-700 mb-3 block">
+            <Label className="text-base font-semibold text-black mb-3 block">
               Period Flow
             </Label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -65,12 +65,12 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
                   onClick={() => setFlow(option.value)}
                   className={`p-4 rounded-lg border-2 transition-all duration-200 ${
                     flow === option.value
-                      ? 'border-pink-500 ring-2 ring-pink-200'
+                      ? 'border-black ring-2 ring-gray-200'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className={`w-6 h-6 rounded-full ${option.color} mx-auto mb-2`}></div>
-                  <span className="text-sm font-medium">{option.label}</span>
+                  <span className="text-sm font-medium text-black">{option.label}</span>
                 </button>
               ))}
             </div>
@@ -78,7 +78,7 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
 
           {/* Pain Level */}
           <div>
-            <Label className="text-base font-semibold text-gray-700 mb-3 block">
+            <Label className="text-base font-semibold text-black mb-3 block">
               Pain Level: {pain[0]}/10
             </Label>
             <div className="px-4">
@@ -89,7 +89,7 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
                 step={1}
                 className="w-full"
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-2">
+              <div className="flex justify-between text-xs text-gray-600 mt-2">
                 <span>No pain</span>
                 <span>Severe pain</span>
               </div>
@@ -98,7 +98,7 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
 
           {/* Mood Tracking */}
           <div>
-            <Label className="text-base font-semibold text-gray-700 mb-3 block">
+            <Label className="text-base font-semibold text-black mb-3 block">
               Mood
             </Label>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -108,12 +108,12 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
                   onClick={() => setMood(option.value)}
                   className={`p-3 rounded-lg border-2 transition-all duration-200 text-center ${
                     mood === option.value
-                      ? 'border-purple-500 ring-2 ring-purple-200'
+                      ? 'border-black ring-2 ring-gray-200'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className="text-lg mb-1">{option.label.split(' ')[0]}</div>
-                  <span className="text-xs font-medium">{option.label.split(' ')[1]}</span>
+                  <span className="text-xs font-medium text-black">{option.label.split(' ')[1]}</span>
                 </button>
               ))}
             </div>
@@ -121,7 +121,7 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
 
           {/* Sleep Tracking */}
           <div>
-            <Label className="text-base font-semibold text-gray-700 mb-3 block">
+            <Label className="text-base font-semibold text-black mb-3 block">
               Sleep Hours: {sleep[0]}h
             </Label>
             <div className="px-4">
@@ -133,7 +133,7 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
                 step={0.5}
                 className="w-full"
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-2">
+              <div className="flex justify-between text-xs text-gray-600 mt-2">
                 <span>0h</span>
                 <span>12h</span>
               </div>
@@ -142,7 +142,7 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
 
           {/* Notes */}
           <div>
-            <Label htmlFor="notes" className="text-base font-semibold text-gray-700 mb-3 block">
+            <Label htmlFor="notes" className="text-base font-semibold text-black mb-3 block">
               Notes (Optional)
             </Label>
             <Textarea
@@ -150,14 +150,14 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any additional notes about your day..."
-              className="min-h-[100px]"
+              className="min-h-[100px] border-gray-300 focus:border-black"
             />
           </div>
 
           {/* Save Button */}
           <Button
             onClick={handleSave}
-            className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white py-3"
+            className="w-full bg-black text-white hover:bg-gray-800 py-3"
           >
             Save Daily Log
           </Button>

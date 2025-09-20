@@ -41,24 +41,24 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-card/80 backdrop-blur-sm border-b border-border">
+      <header className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-black rounded-md flex items-center justify-center">
               <Heart className="w-4 h-4 text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold text-black">
               Perica
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" onClick={handleSignOut}>
+            <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-gray-600 hover:text-black">
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
             </Button>
-            <div className="w-8 h-8 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-black rounded-md flex items-center justify-center">
               <User className="w-4 h-4 text-white" />
             </div>
           </div>
@@ -68,11 +68,11 @@ export const Dashboard = () => {
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8">
         {/* Welcome Banner */}
-        <Card className="p-6 mb-8 bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-border backdrop-blur-sm">
+        <Card className="p-6 mb-8 bg-gray-50 border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-foreground mb-2">Good morning! 👋</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-2xl font-bold text-black mb-2">Good morning! 👋</h1>
+              <p className="text-gray-600">
                 {currentCycle && currentCycle.currentDay > 0 ? (
                   <>
                     You're in your {getCurrentPhase().toLowerCase()} phase. 
@@ -84,18 +84,18 @@ export const Dashboard = () => {
               </p>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              <div className="text-3xl font-bold text-black">
                 {currentCycle && currentCycle.currentDay > 0 ? `Day ${currentCycle.currentDay}` : '--'}
               </div>
-              <p className="text-sm text-muted-foreground">of your cycle</p>
+              <p className="text-sm text-gray-600">of your cycle</p>
             </div>
           </div>
         </Card>
 
         {cycles.length === 0 && (
-          <Card className="p-6 mb-8 bg-yellow-500/10 border border-yellow-500/20">
-            <h3 className="font-semibold text-yellow-400 mb-2">Ready to start tracking?</h3>
-            <p className="text-yellow-300">
+          <Card className="p-6 mb-8 bg-yellow-50 border border-yellow-200">
+            <h3 className="font-semibold text-yellow-800 mb-2">Ready to start tracking?</h3>
+            <p className="text-yellow-700">
               Click on any past date in the calendar to record your period and begin tracking your cycle.
             </p>
           </Card>
@@ -103,16 +103,16 @@ export const Dashboard = () => {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-sm">
-            <TabsTrigger value="calendar" className="flex items-center space-x-2">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-100">
+            <TabsTrigger value="calendar" className="flex items-center space-x-2 text-gray-600 data-[state=active]:text-black data-[state=active]:bg-white">
               <Calendar className="w-4 h-4" />
               <span>Calendar</span>
             </TabsTrigger>
-            <TabsTrigger value="insights" className="flex items-center space-x-2">
+            <TabsTrigger value="insights" className="flex items-center space-x-2 text-gray-600 data-[state=active]:text-black data-[state=active]:bg-white">
               <TrendingUp className="w-4 h-4" />
               <span>Insights</span>
             </TabsTrigger>
-            <TabsTrigger value="chat" className="flex items-center space-x-2">
+            <TabsTrigger value="chat" className="flex items-center space-x-2 text-gray-600 data-[state=active]:text-black data-[state=active]:bg-white">
               <MessageCircle className="w-4 h-4" />
               <span>AI Chat</span>
             </TabsTrigger>

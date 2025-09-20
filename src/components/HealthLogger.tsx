@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { 
   Heart, 
@@ -192,11 +190,32 @@ export const HealthLogger = ({ selectedDate }: HealthLoggerProps) => {
 
   return (
     <div className="space-y-6">
-      <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
+      <style jsx>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #000;
+          cursor: pointer;
+          border: 2px solid #fff;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .slider::-moz-range-thumb {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #000;
+          cursor: pointer;
+          border: 2px solid #fff;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+      `}</style>
+      <Card className="p-6 bg-white border border-gray-200">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-xl font-semibold text-foreground">Health Log</h3>
-            <p className="text-sm text-muted-foreground">
+            <h3 className="text-xl font-semibold text-black">Health Log</h3>
+            <p className="text-sm text-gray-600">
               {selectedDate.toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 year: 'numeric', 
@@ -205,7 +224,7 @@ export const HealthLogger = ({ selectedDate }: HealthLoggerProps) => {
               })}
             </p>
           </div>
-          <Button onClick={handleSave} className="bg-primary hover:bg-primary/90">
+          <Button onClick={handleSave} className="bg-black text-white hover:bg-gray-800">
             <Save className="w-4 h-4 mr-2" />
             Save Log
           </Button>
@@ -215,20 +234,23 @@ export const HealthLogger = ({ selectedDate }: HealthLoggerProps) => {
           {/* Period Flow */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <Droplets className="w-5 h-5 text-primary" />
-              <h4 className="font-medium text-foreground">Period Flow</h4>
+              <Droplets className="w-5 h-5 text-black" />
+              <h4 className="font-medium text-black">Period Flow</h4>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {flowOptions.map((option) => (
-                <Button
+                <button
                   key={option.value}
-                  variant={flow === option.value ? "default" : "outline"}
                   onClick={() => setFlow(option.value)}
-                  className="justify-start h-auto p-3"
+                  className={`w-full justify-start h-auto p-3 rounded-md border transition-colors ${
+                    flow === option.value 
+                      ? 'bg-black text-white border-black' 
+                      : 'border-gray-300 text-black hover:bg-gray-50 bg-white'
+                  }`}
                 >
                   <span className="mr-2">{option.icon}</span>
                   {option.label}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
@@ -236,38 +258,48 @@ export const HealthLogger = ({ selectedDate }: HealthLoggerProps) => {
           {/* Pain Level */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <Zap className="w-5 h-5 text-primary" />
-              <h4 className="font-medium text-foreground">Pain Level</h4>
-              <span className="text-lg font-bold text-primary">{painLevel[0]}/10</span>
+              <Zap className="w-5 h-5 text-black" />
+              <h4 className="font-medium text-black">Pain Level</h4>
+              <span className="text-lg font-bold text-black">{painLevel[0]}/10</span>
             </div>
-            <Slider
-              value={painLevel}
-              onValueChange={setPainLevel}
-              max={10}
-              step={1}
-              className="w-full"
-            />
+            <div className="relative">
+              <input
+                type="range"
+                min="0"
+                max="10"
+                step="1"
+                value={painLevel[0]}
+                onChange={(e) => setPainLevel([parseInt(e.target.value)])}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #000 0%, #000 ${(painLevel[0] / 10) * 100}%, #e5e7eb ${(painLevel[0] / 10) * 100}%, #e5e7eb 100%)`
+                }}
+              />
+            </div>
           </div>
 
           {/* Mood */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <Heart className="w-5 h-5 text-primary" />
-              <h4 className="font-medium text-foreground">Mood</h4>
+              <Heart className="w-5 h-5 text-black" />
+              <h4 className="font-medium text-black">Mood</h4>
             </div>
             <div className="grid grid-cols-3 gap-2">
               {moodOptions.map((option) => {
                 const IconComponent = option.icon;
                 return (
-                  <Button
+                  <button
                     key={option.value}
-                    variant={mood === option.value ? "default" : "outline"}
                     onClick={() => setMood(option.value)}
-                    className="flex flex-col h-auto p-3 space-y-1"
+                    className={`w-full flex flex-col h-auto p-3 space-y-1 rounded-md border transition-colors ${
+                      mood === option.value 
+                        ? 'bg-black text-white border-black' 
+                        : 'border-gray-300 text-black hover:bg-gray-50 bg-white'
+                    }`}
                   >
                     <IconComponent className="w-5 h-5" />
                     <span className="text-xs">{option.label}</span>
-                  </Button>
+                  </button>
                 );
               })}
             </div>
@@ -276,32 +308,38 @@ export const HealthLogger = ({ selectedDate }: HealthLoggerProps) => {
           {/* Sleep */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <Moon className="w-5 h-5 text-primary" />
-              <h4 className="font-medium text-foreground">Sleep</h4>
-              <span className="text-lg font-bold text-primary">{sleep[0]}h</span>
+              <Moon className="w-5 h-5 text-black" />
+              <h4 className="font-medium text-black">Sleep</h4>
+              <span className="text-lg font-bold text-black">{sleep[0]}h</span>
             </div>
-            <Slider
-              value={sleep}
-              onValueChange={setSleep}
-              max={12}
-              min={0}
-              step={0.5}
-              className="w-full"
-            />
+            <div className="relative">
+              <input
+                type="range"
+                min="0"
+                max="12"
+                step="0.5"
+                value={sleep[0]}
+                onChange={(e) => setSleep([parseFloat(e.target.value)])}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #000 0%, #000 ${(sleep[0] / 12) * 100}%, #e5e7eb ${(sleep[0] / 12) * 100}%, #e5e7eb 100%)`
+                }}
+              />
+            </div>
           </div>
 
           {/* Body Temperature */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <Thermometer className="w-5 h-5 text-primary" />
-              <h4 className="font-medium text-foreground">Temperature (°C)</h4>
+              <Thermometer className="w-5 h-5 text-black" />
+              <h4 className="font-medium text-black">Temperature (°C)</h4>
             </div>
             <input
               type="number"
               value={temperature}
               onChange={(e) => setTemperature(e.target.value)}
               placeholder="e.g. 36.5"
-              className="w-full p-2 rounded-md bg-background border border-border text-foreground"
+              className="w-full p-2 rounded-md bg-white border border-gray-300 text-black focus:border-black"
               step="0.1"
               min="30"
               max="45"
@@ -311,37 +349,46 @@ export const HealthLogger = ({ selectedDate }: HealthLoggerProps) => {
           {/* Energy Level */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <Activity className="w-5 h-5 text-primary" />
-              <h4 className="font-medium text-foreground">Energy Level</h4>
-              <span className="text-lg font-bold text-primary">{energy[0]}/10</span>
+              <Activity className="w-5 h-5 text-black" />
+              <h4 className="font-medium text-black">Energy Level</h4>
+              <span className="text-lg font-bold text-black">{energy[0]}/10</span>
             </div>
-            <Slider
-              value={energy}
-              onValueChange={setEnergy}
-              max={10}
-              min={0}
-              step={1}
-              className="w-full"
-            />
+            <div className="relative">
+              <input
+                type="range"
+                min="0"
+                max="10"
+                step="1"
+                value={energy[0]}
+                onChange={(e) => setEnergy([parseInt(e.target.value)])}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #000 0%, #000 ${(energy[0] / 10) * 100}%, #e5e7eb ${(energy[0] / 10) * 100}%, #e5e7eb 100%)`
+                }}
+              />
+            </div>
           </div>
 
           {/* Appetite */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <Utensils className="w-5 h-5 text-primary" />
-              <h4 className="font-medium text-foreground">Appetite</h4>
+              <Utensils className="w-5 h-5 text-black" />
+              <h4 className="font-medium text-black">Appetite</h4>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {appetiteOptions.map((option) => (
-                <Button
+                <button
                   key={option.value}
-                  variant={appetite === option.value ? "default" : "outline"}
                   onClick={() => setAppetite(option.value)}
-                  className="justify-start h-auto p-3"
+                  className={`w-full justify-start h-auto p-3 rounded-md border transition-colors ${
+                    appetite === option.value 
+                      ? 'bg-black text-white border-black' 
+                      : 'border-gray-300 text-black hover:bg-gray-50 bg-white'
+                  }`}
                 >
                   <span className="mr-2">{option.icon}</span>
                   {option.label}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
@@ -349,37 +396,46 @@ export const HealthLogger = ({ selectedDate }: HealthLoggerProps) => {
           {/* Water Intake */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <Droplets className="w-5 h-5 text-blue-500" />
-              <h4 className="font-medium text-foreground">Water Intake</h4>
-              <span className="text-lg font-bold text-primary">{water[0]} glasses</span>
+              <Droplets className="w-5 h-5 text-black" />
+              <h4 className="font-medium text-black">Water Intake</h4>
+              <span className="text-lg font-bold text-black">{water[0]} glasses</span>
             </div>
-            <Slider
-              value={water}
-              onValueChange={setWater}
-              max={15}
-              min={0}
-              step={1}
-              className="w-full"
-            />
+            <div className="relative">
+              <input
+                type="range"
+                min="0"
+                max="15"
+                step="1"
+                value={water[0]}
+                onChange={(e) => setWater([parseInt(e.target.value)])}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #000 0%, #000 ${(water[0] / 15) * 100}%, #e5e7eb ${(water[0] / 15) * 100}%, #e5e7eb 100%)`
+                }}
+              />
+            </div>
           </div>
         </div>
 
         {/* Exercise */}
         <div className="space-y-3 mt-6">
           <div className="flex items-center space-x-2">
-            <Activity className="w-5 h-5 text-primary" />
-            <h4 className="font-medium text-foreground">Exercise Intensity</h4>
+            <Activity className="w-5 h-5 text-black" />
+            <h4 className="font-medium text-black">Exercise Intensity</h4>
           </div>
           <div className="grid grid-cols-4 gap-2">
             {exerciseOptions.map((option) => (
-              <Button
+              <button
                 key={option.value}
-                variant={exercise === option.value ? "default" : "outline"}
                 onClick={() => setExercise(option.value)}
-                className="h-auto p-3"
+                className={`w-full h-auto p-3 rounded-md border transition-colors ${
+                  exercise === option.value 
+                    ? 'bg-black text-white border-black' 
+                    : 'border-gray-300 text-black hover:bg-gray-50 bg-white'
+                }`}
               >
                 {option.label}
-              </Button>
+              </button>
             ))}
           </div>
         </div>
@@ -387,33 +443,36 @@ export const HealthLogger = ({ selectedDate }: HealthLoggerProps) => {
         {/* Symptoms */}
         <div className="space-y-3 mt-6">
           <div className="flex items-center space-x-2">
-            <Brain className="w-5 h-5 text-primary" />
-            <h4 className="font-medium text-foreground">Symptoms</h4>
+            <Brain className="w-5 h-5 text-black" />
+            <h4 className="font-medium text-black">Symptoms</h4>
           </div>
           <div className="flex flex-wrap gap-2">
             {commonSymptoms.map((symptom) => (
-              <Badge
+              <button
                 key={symptom}
-                variant={symptoms.includes(symptom) ? "default" : "outline"}
-                className="cursor-pointer hover:bg-primary/80"
                 onClick={() => toggleSymptom(symptom)}
+                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium cursor-pointer transition-colors ${
+                  symptoms.includes(symptom) 
+                    ? 'bg-black text-white hover:bg-gray-800' 
+                    : 'border border-gray-300 text-black hover:bg-gray-50 bg-white'
+                }`}
               >
                 {symptoms.includes(symptom) && <X className="w-3 h-3 mr-1" />}
                 {!symptoms.includes(symptom) && <Plus className="w-3 h-3 mr-1" />}
                 {symptom}
-              </Badge>
+              </button>
             ))}
           </div>
         </div>
 
         {/* Notes */}
         <div className="space-y-3 mt-6">
-          <h4 className="font-medium text-foreground">Additional Notes</h4>
-          <Textarea
+          <h4 className="font-medium text-black">Additional Notes</h4>
+          <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Any additional thoughts or observations..."
-            className="min-h-[80px] bg-background/50"
+            className="min-h-[80px] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
           />
         </div>
       </Card>

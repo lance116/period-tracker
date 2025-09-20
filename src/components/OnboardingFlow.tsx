@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -93,19 +92,19 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <User className="w-12 h-12 mx-auto mb-4 text-pink-500" />
+              <User className="w-12 h-12 mx-auto mb-4 text-black" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Personal Information</h2>
               <p className="text-gray-600">Let's start with some basic information</p>
             </div>
             
             <div>
               <Label htmlFor="dob">Date of Birth</Label>
-              <Input
+              <input
                 id="dob"
                 type="date"
                 value={dateOfBirth}
                 onChange={(e) => setDateOfBirth(e.target.value)}
-                className="mt-1"
+                className="mt-1 w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                 required
               />
             </div>
@@ -130,33 +129,33 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <Calendar className="w-12 h-12 mx-auto mb-4 text-pink-500" />
+              <Calendar className="w-12 h-12 mx-auto mb-4 text-black" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Period History</h2>
               <p className="text-gray-600">Tell us about your typical cycle</p>
             </div>
             
             <div>
               <Label htmlFor="lastPeriod">When did your last period start?</Label>
-              <Input
+              <input
                 id="lastPeriod"
                 type="date"
                 value={lastPeriodDate}
                 onChange={(e) => setLastPeriodDate(e.target.value)}
-                className="mt-1"
+                className="mt-1 w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                 required
               />
             </div>
 
             <div>
               <Label htmlFor="cycleLength">Average cycle length (days)</Label>
-              <Input
+              <input
                 id="cycleLength"
                 type="number"
                 min="21"
                 max="35"
                 value={averageCycleLength}
                 onChange={(e) => setAverageCycleLength(e.target.value)}
-                className="mt-1"
+                className="mt-1 w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                 required
               />
               <p className="text-sm text-gray-500 mt-1">Typical range is 21-35 days</p>
@@ -168,26 +167,26 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <Heart className="w-12 h-12 mx-auto mb-4 text-pink-500" />
+              <Heart className="w-12 h-12 mx-auto mb-4 text-black" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Period Duration</h2>
               <p className="text-gray-600">How many days does your period typically last?</p>
             </div>
             
             <div>
               <Label htmlFor="duration">Typical Period Duration (days)</Label>
-              <Input
+              <input
                 id="duration"
                 type="number"
                 min="1"
                 max="10"
                 value={periodDuration}
                 onChange={(e) => setPeriodDuration(e.target.value)}
-                className="mt-1"
+                className="mt-1 w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                 required
               />
             </div>
 
-            <div className="bg-pink-50 p-4 rounded-lg">
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
               <h3 className="font-semibold text-gray-900 mb-2">Summary</h3>
               <ul className="text-sm text-gray-600 space-y-1">
                 <li>• Birth Date: {dateOfBirth}</li>
@@ -206,8 +205,8 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-6">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <Card className="w-full max-w-md p-6 bg-white border border-gray-200">
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
             <span className="text-sm text-gray-500">Step {step} of 3</span>
@@ -216,7 +215,7 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
                 <div
                   key={i}
                   className={`w-2 h-2 rounded-full ${
-                    i <= step ? 'bg-pink-500' : 'bg-gray-200'
+                    i <= step ? 'bg-black' : 'bg-gray-200'
                   }`}
                 />
               ))}
@@ -241,7 +240,7 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
             {step < 3 ? (
               <Button
                 onClick={handleNext}
-                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                className="bg-black text-white hover:bg-gray-800"
                 disabled={
                   (step === 1 && !dateOfBirth) ||
                   (step === 2 && (!lastPeriodDate || !averageCycleLength))
@@ -252,7 +251,7 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
             ) : (
               <Button
                 onClick={handleComplete}
-                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                className="bg-black text-white hover:bg-gray-800"
                 disabled={isLoading || !periodDuration}
               >
                 {isLoading ? 'Setting up...' : 'Complete Setup'}

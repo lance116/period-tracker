@@ -95,22 +95,22 @@ export const PeriodLogger = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white">
+        <Button className="bg-black text-white hover:bg-gray-800">
           <Plus className="w-4 h-4 mr-2" />
           Log Your Period
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-card border-border">
+      <DialogContent className="bg-white border-gray-200">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-pink-500" />
+          <DialogTitle className="flex items-center gap-2 text-black">
+            <Heart className="w-5 h-5 text-black" />
             Log New Period
           </DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleLogPeriod} className="space-y-4">
           <div>
-            <Label htmlFor="startDate">Period Start Date</Label>
+            <Label htmlFor="startDate" className="text-black font-medium">Period Start Date</Label>
             <div className="relative mt-1">
               <Input
                 id="startDate"
@@ -118,17 +118,17 @@ export const PeriodLogger = () => {
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 max={today}
-                className="w-full cursor-pointer"
+                className="w-full cursor-pointer border-gray-300 focus:border-black"
                 required
               />
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-gray-600 mt-1">
               You can only log periods from today or earlier
             </p>
           </div>
 
           <div>
-            <Label htmlFor="duration">Period Duration (days)</Label>
+            <Label htmlFor="duration" className="text-black font-medium">Period Duration (days)</Label>
             <Input
               id="duration"
               type="number"
@@ -136,7 +136,7 @@ export const PeriodLogger = () => {
               max="10"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
-              className="mt-1"
+              className="mt-1 border-gray-300 focus:border-black"
               required
             />
           </div>
@@ -147,12 +147,13 @@ export const PeriodLogger = () => {
               variant="outline"
               onClick={() => setIsOpen(false)}
               disabled={isLoading}
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+              className="bg-black text-white hover:bg-gray-800"
               disabled={isLoading || !startDate}
             >
               {isLoading ? 'Logging...' : 'Log Period'}

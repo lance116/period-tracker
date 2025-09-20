@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
@@ -151,10 +150,10 @@ export const PeriodEditor = ({ isOpen, onClose, period, onUpdate }: PeriodEditor
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="bg-white border border-gray-200">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-pink-500" />
+            <Calendar className="w-5 h-5 text-black" />
             Edit Period
           </DialogTitle>
         </DialogHeader>
@@ -162,13 +161,13 @@ export const PeriodEditor = ({ isOpen, onClose, period, onUpdate }: PeriodEditor
         <form onSubmit={handleUpdate} className="space-y-4">
           <div>
             <Label htmlFor="editStartDate">Period Start Date</Label>
-            <Input
+            <input
               id="editStartDate"
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               max={today}
-              className="mt-1"
+              className="mt-1 w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               required
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -178,14 +177,14 @@ export const PeriodEditor = ({ isOpen, onClose, period, onUpdate }: PeriodEditor
 
           <div>
             <Label htmlFor="editDuration">Period Duration (days)</Label>
-            <Input
+            <input
               id="editDuration"
               type="number"
               min="1"
               max="10"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
-              className="mt-1"
+              className="mt-1 w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               required
             />
           </div>
@@ -213,7 +212,7 @@ export const PeriodEditor = ({ isOpen, onClose, period, onUpdate }: PeriodEditor
               </Button>
               <Button
                 type="submit"
-                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                className="bg-black text-white hover:bg-gray-800"
                 disabled={isLoading || !startDate}
               >
                 {isLoading ? 'Updating...' : 'Update Period'}

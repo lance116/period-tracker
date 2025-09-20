@@ -97,76 +97,76 @@ export const CycleCalendar = ({ selectedDate, onDateSelect }: CycleCalendarProps
     <div className="space-y-6">
       {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="p-4 bg-gradient-to-br from-pink-500/20 to-pink-600/20 border border-pink-500/30">
+        <Card className="p-4 bg-white border border-gray-200">
           <div className="text-center">
-            <div className="text-2xl font-bold text-pink-400 mb-1">
+            <div className="text-2xl font-bold text-black mb-1">
               {currentCycle && currentCycle.currentDay > 0 ? currentCycle.currentDay : '--'}
             </div>
-            <div className="text-sm text-pink-300">Current Day</div>
+            <div className="text-sm text-gray-600">Current Day</div>
           </div>
         </Card>
         
-        <Card className="p-4 bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30">
+        <Card className="p-4 bg-white border border-gray-200">
           <div className="text-center">
-            <div className="text-2xl font-bold text-purple-400 mb-1">
+            <div className="text-2xl font-bold text-black mb-1">
               {nextPeriod ? nextPeriod.daysUntil : '--'}
             </div>
-            <div className="text-sm text-purple-300">Days Until Period</div>
+            <div className="text-sm text-gray-600">Days Until Period</div>
           </div>
         </Card>
         
-        <Card className="p-4 bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30">
+        <Card className="p-4 bg-white border border-gray-200">
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-400 mb-1">{averageCycleLength}</div>
-            <div className="text-sm text-blue-300">Avg Cycle Length</div>
+            <div className="text-2xl font-bold text-black mb-1">{averageCycleLength}</div>
+            <div className="text-sm text-gray-600">Avg Cycle Length</div>
           </div>
         </Card>
         
-        <Card className="p-4 bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30">
+        <Card className="p-4 bg-white border border-gray-200">
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-400 mb-1">
+            <div className="text-2xl font-bold text-black mb-1">
               {profile?.average_period_duration || 5}
             </div>
-            <div className="text-sm text-green-300">Period Duration</div>
+            <div className="text-sm text-gray-600">Period Duration</div>
           </div>
         </Card>
       </div>
 
-      <Card className="p-6 bg-card shadow-lg border border-border">
+      <Card className="p-6 bg-white shadow-lg border border-gray-200">
         {/* Enhanced Legend */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6 text-sm">
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+            <div className="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">
               <Droplets className="w-3 h-3 text-white" />
             </div>
-            <span className="font-medium">Period (Past)</span>
+            <span className="font-medium text-black">Period (Past)</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-red-300 to-red-400 rounded-full flex items-center justify-center border-2 border-red-500 opacity-70">
+            <div className="w-6 h-6 bg-red-300 rounded-full flex items-center justify-center border-2 border-red-600 opacity-70">
               <Droplets className="w-3 h-3 text-white" />
             </div>
-            <span className="font-medium">Period (Predicted)</span>
+            <span className="font-medium text-black">Period (Predicted)</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center">
+            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
               <Circle className="w-3 h-3 text-white fill-current" />
             </div>
-            <span className="font-medium">Fertile Window</span>
+            <span className="font-medium text-black">Fertile Window</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center">
+            <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
               <Sparkles className="w-3 h-3 text-white" />
             </div>
-            <span className="font-medium">Ovulation</span>
+            <span className="font-medium text-black">Ovulation</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-muted rounded-full border-2 border-border"></div>
-            <span className="font-medium">Regular Day</span>
+            <div className="w-6 h-6 bg-gray-200 rounded-full border-2 border-gray-400"></div>
+            <span className="font-medium text-black">Regular Day</span>
           </div>
         </div>
 
-        <div className="mb-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-          <div className="text-sm text-blue-300">
+        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="text-sm text-blue-800">
             <strong>Tip:</strong> Click on any period day to edit or delete it. Future predictions are shown with reduced opacity.
           </div>
         </div>
@@ -185,14 +185,14 @@ export const CycleCalendar = ({ selectedDate, onDateSelect }: CycleCalendarProps
 
         {/* Next Period Alert */}
         {nextPeriod && nextPeriod.daysUntil <= 7 && (
-          <div className="mt-6 p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-lg border border-purple-500/20">
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center space-x-2">
-              <Droplets className="w-5 h-5 text-purple-400" />
+              <Droplets className="w-5 h-5 text-black" />
               <div>
-                <div className="font-semibold text-purple-300">
+                <div className="font-semibold text-black">
                   Your period is expected in {nextPeriod.daysUntil} day{nextPeriod.daysUntil !== 1 ? 's' : ''}!
                 </div>
-                <div className="text-sm text-purple-400">
+                <div className="text-sm text-gray-600">
                   Expected date: {nextPeriod.date.toLocaleDateString()} 
                   {nextPeriod.confidence && (
                     <span className="ml-2">
@@ -216,14 +216,14 @@ export const CycleCalendar = ({ selectedDate, onDateSelect }: CycleCalendarProps
 
       {/* Quick Period Log Dialog */}
       <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-        <DialogContent>
+        <DialogContent className="bg-white border-gray-200">
           <DialogHeader>
-            <DialogTitle>Log Period for {selectedLogDate?.toLocaleDateString()}</DialogTitle>
+            <DialogTitle className="text-black">Log Period for {selectedLogDate?.toLocaleDateString()}</DialogTitle>
           </DialogHeader>
           
           <form onSubmit={handleLogPeriod} className="space-y-4">
             <div>
-              <Label htmlFor="duration">Period Duration (days)</Label>
+              <Label htmlFor="duration" className="text-black font-medium">Period Duration (days)</Label>
               <Input
                 id="duration"
                 type="number"
@@ -231,7 +231,7 @@ export const CycleCalendar = ({ selectedDate, onDateSelect }: CycleCalendarProps
                 max="10"
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
-                className="mt-1"
+                className="mt-1 border-gray-300 focus:border-black"
                 required
               />
             </div>
@@ -241,12 +241,13 @@ export const CycleCalendar = ({ selectedDate, onDateSelect }: CycleCalendarProps
                 type="button"
                 variant="outline"
                 onClick={() => setIsLogDialogOpen(false)}
+                className="border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                className="bg-black text-white hover:bg-gray-800"
               >
                 Log Period
               </Button>

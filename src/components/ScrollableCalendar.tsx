@@ -189,14 +189,14 @@ export const ScrollableCalendar = ({
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     return (
-      <Card key={`${year}-${month}`} className="p-6 mb-6 bg-card shadow-lg border border-border">
-        <h3 className="text-xl font-bold text-foreground mb-4 text-center">
+      <Card key={`${year}-${month}`} className="p-6 mb-6 bg-white shadow-lg border border-gray-200">
+        <h3 className="text-xl font-bold text-black mb-4 text-center">
           {monthNames[month]} {year}
         </h3>
 
         <div className="grid grid-cols-7 gap-2">
           {dayNames.map(day => (
-            <div key={day} className="p-2 text-center text-sm font-semibold text-muted-foreground bg-muted rounded-lg">
+            <div key={day} className="p-2 text-center text-sm font-semibold text-gray-600 bg-gray-100 rounded-lg">
               {day}
             </div>
           ))}
@@ -218,15 +218,15 @@ export const ScrollableCalendar = ({
               'h-12 flex items-center justify-center text-sm cursor-pointer rounded-lg transition-all duration-200 relative font-medium border-2 border-transparent hover:border-border'
             ];
 
-            let bgColor = 'bg-card hover:bg-accent text-foreground';
+            let bgColor = 'bg-white hover:bg-gray-50 text-black';
             let icon = null;
             const isPastDate = date < today;
             
             if (periodInfo.isPeriod) {
-              bgColor = 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-lg';
+              bgColor = 'bg-red-600 text-white hover:bg-red-700 shadow-lg';
               icon = <Droplets className="w-3 h-3 absolute top-1 right-1" />;
             } else if (futurePeriodInfo.isPeriod) {
-              bgColor = 'bg-gradient-to-r from-red-300 to-red-400 text-white hover:from-red-400 hover:to-red-500 border-red-500 shadow-md opacity-70';
+              bgColor = 'bg-red-400 text-white hover:bg-red-500 border-red-500 shadow-md opacity-70';
               icon = <Droplets className="w-3 h-3 absolute top-1 right-1" />;
             } else if (isOvulation) {
               // Check if this ovulation is for a logged period cycle
@@ -238,7 +238,7 @@ export const ScrollableCalendar = ({
                 return date.toDateString() === ovulationDay.toDateString();
               });
               const opacity = !isFromLoggedCycle ? 'opacity-70' : '';
-              bgColor = `bg-gradient-to-r from-blue-400 to-blue-500 text-white hover:from-blue-500 hover:to-blue-600 shadow-lg ${opacity}`;
+              bgColor = `bg-blue-500 text-white hover:bg-blue-600 shadow-lg ${opacity}`;
               icon = <Sparkles className="w-3 h-3 absolute top-1 right-1" />;
             } else if (isFertile) {
               // Check if this fertile window is for a logged period cycle
@@ -254,14 +254,14 @@ export const ScrollableCalendar = ({
                 return date >= fertileStart && date <= fertileEnd;
               });
               const opacity = !isFromLoggedCycle ? 'opacity-70' : '';
-              bgColor = `bg-gradient-to-r from-green-400 to-green-500 text-white hover:from-green-500 hover:to-green-600 shadow-md ${opacity}`;
+              bgColor = `bg-green-500 text-white hover:bg-green-600 shadow-md ${opacity}`;
               icon = <Circle className="w-2 h-2 absolute top-1 right-1 fill-current" />;
             }
 
             cellClasses.push(bgColor);
 
             if (isToday) {
-              cellClasses.push('ring-4 ring-pink-400 ring-opacity-50 font-bold scale-105');
+              cellClasses.push('ring-4 ring-black ring-opacity-50 font-bold scale-105');
             }
 
             return (
