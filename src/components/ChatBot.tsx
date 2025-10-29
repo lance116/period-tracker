@@ -43,8 +43,18 @@ export const ChatBot = () => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('chat-with-gemini', {
-        body: { message: inputMessage }
+      // Get current session to ensure auth header is sent
+      const { data: sessionData } = await supabase.auth.getSession();
+
+      if (!sessionData.session) {
+        throw new Error('No active session. Please log out and log back in.');
+      }
+
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: { message: inputMessage },
+        headers: {
+          Authorization: `Bearer ${sessionData.session.access_token}`
+        }
       });
 
       if (error) throw error;

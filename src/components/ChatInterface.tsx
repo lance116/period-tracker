@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useCycles } from '@/hooks/useCycles';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/hooks/useAuth';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Message {
   id: string;
@@ -20,6 +21,7 @@ export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -28,8 +30,8 @@ export const ChatInterface = () => {
 
   // Load chat history on mount
   useEffect(() => {
-    const loadChatHistory = async () => {
-      if (!user) return;
+    const loadHistory = async () => {
+      if (!user || historyLoaded) return;
 
       try {
         const { data, error } = await supabase
@@ -42,46 +44,50 @@ export const ChatInterface = () => {
         if (error) throw error;
 
         if (data && data.length > 0) {
-          const loadedMessages = data.map(msg => ({
+          setMessages(data.map(msg => ({
             id: msg.id,
             content: msg.content,
             isUser: msg.is_user,
             timestamp: new Date(msg.created_at)
-          }));
-          setMessages(loadedMessages);
+          })));
         } else {
-          // Show welcome message only if no history
+          // Show welcome message if no history
           setMessages([{
             id: '1',
-            content: "Hi! I'm your Period Tracker assistant. I can help you with questions about menstrual health, cycle tracking, symptoms, fertility, and general wellness. Feel free to ask me anything about your cycle or period-related concerns!",
+            content: "Hi! I'm Perica, your period tracking assistant. I can help you with questions about menstrual health, cycle tracking, symptoms, fertility, and general wellness. I can see your cycle data and health logs to give you personalized advice. How can I help you today?",
             isUser: false,
             timestamp: new Date()
           }]);
         }
+        setHistoryLoaded(true);
       } catch (error) {
-        console.error('Error loading chat history:', error);
-        // Show welcome message on error
+        console.error('Error loading history:', error);
+        // Show welcome on error
         setMessages([{
           id: '1',
-          content: "Hi! I'm your Period Tracker assistant. I can help you with questions about menstrual health, cycle tracking, symptoms, fertility, and general wellness. Feel free to ask me anything about your cycle or period-related concerns!",
+          content: "Hi! I'm Perica, your period tracking assistant. I can help you with questions about menstrual health, cycle tracking, symptoms, fertility, and general wellness. I can see your cycle data and health logs to give you personalized advice. How can I help you today?",
           isUser: false,
           timestamp: new Date()
         }]);
+        setHistoryLoaded(true);
       }
     };
 
-    loadChatHistory();
-  }, [user]);
+    loadHistory();
+  }, [user, historyLoaded]);
 
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll to bottom when messages change or history loads
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
-      }
+    if (scrollAreaRef.current && historyLoaded) {
+      // Use setTimeout to ensure DOM has updated
+      setTimeout(() => {
+        const scrollContainer = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+        if (scrollContainer) {
+          scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }
+      }, 100);
     }
-  }, [messages]);
+  }, [messages, historyLoaded]);
 
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading || !user) return;
@@ -99,19 +105,12 @@ export const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      // Save user message to database
-      await supabase
-        .from('chat_messages')
-        .insert({
-          user_id: user.id,
-          content: messageContent,
-          is_user: true
-        });
+      console.log('Sending message to chat function...');
 
       // Prepare user data for context
       const currentCycle = getCurrentCycle();
       const nextPeriod = getNextPeriodPrediction();
-      
+
       // Calculate current phase
       let currentPhase = 'unknown';
       if (currentCycle && profile) {
@@ -120,7 +119,7 @@ export const ChatInterface = () => {
         const cycleStart = new Date(currentCycle.start_date);
         cycleStart.setHours(0, 0, 0, 0);
         const dayOfCycle = Math.floor((today.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-        
+
         if (dayOfCycle <= (profile.average_period_duration || 5)) {
           currentPhase = 'menstrual';
         } else if (dayOfCycle <= 14) {
@@ -140,30 +139,59 @@ export const ChatInterface = () => {
         .order('log_date', { ascending: false })
         .limit(7);
 
-      // Get recent chat history for context (last 10 messages)
-      const recentMessages = messages.slice(-10).map(msg => ({
+      // Get recent chat history for context (last 5 messages only, excluding the current one)
+      const recentMessages = messages.slice(-5).map(msg => ({
         role: msg.isUser ? 'user' : 'assistant',
         content: msg.content
       }));
 
       const userData = {
-        cycles: cycles?.slice(-5),
-        profile,
+        cycles: cycles?.slice(-5) || [],
+        profile: profile || null,
         currentPhase,
         nextPeriod: nextPeriod?.date ? new Date(nextPeriod.date).toLocaleDateString() : null,
         healthLogs: healthLogs || [],
         chatHistory: recentMessages
       };
 
+      console.log('Calling chat function with userData:', {
+        hasCycles: !!userData.cycles.length,
+        hasProfile: !!userData.profile,
+        currentPhase: userData.currentPhase,
+        nextPeriod: userData.nextPeriod,
+        healthLogsCount: userData.healthLogs.length
+      });
+
+      // Get current session to ensure auth header is sent
+      const { data: sessionData } = await supabase.auth.getSession();
+
+      if (!sessionData.session) {
+        throw new Error('No active session. Please log out and log back in.');
+      }
+
+      console.log('Session found, calling function...');
+
       // Send message with user data
-      const { data, error } = await supabase.functions.invoke('chat-with-gemini', {
-        body: { 
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: {
           message: messageContent,
-          userData 
+          userData
+        },
+        headers: {
+          Authorization: `Bearer ${sessionData.session.access_token}`
         }
       });
 
-      if (error) throw error;
+      console.log('Chat function response:', { data, error });
+
+      if (error) {
+        console.error('Function error:', error);
+        throw error;
+      }
+
+      if (!data || !data.reply) {
+        throw new Error('No reply from function');
+      }
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -173,23 +201,44 @@ export const ChatInterface = () => {
       };
 
       setMessages(prev => [...prev, botMessage]);
+      console.log('Message successfully added');
 
-      // Save bot message to database
-      await supabase
-        .from('chat_messages')
-        .insert({
-          user_id: user.id,
-          content: data.reply,
-          is_user: false
-        });
+      // Save both messages to database
+      try {
+        await supabase.from('chat_messages').insert([
+          {
+            user_id: user.id,
+            content: messageContent,
+            is_user: true
+          },
+          {
+            user_id: user.id,
+            content: data.reply,
+            is_user: false
+          }
+        ]);
+        console.log('Messages saved to database');
+      } catch (saveError) {
+        console.error('Error saving to database:', saveError);
+        // Don't throw - the chat still works, just history won't persist
+      }
 
-    } catch (error) {
-      console.error('Chat error:', error);
+    } catch (error: any) {
+      console.error('Chat error details:', {
+        error,
+        message: error?.message,
+        status: error?.status,
+        details: error?.details
+      });
+
       toast({
         title: "Chat Error",
-        description: "Sorry, I'm having trouble responding right now. Please try again.",
+        description: error?.message || "Sorry, I'm having trouble responding right now. Please try again.",
         variant: "destructive"
       });
+
+      // Remove the user message if there was an error
+      setMessages(prev => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
     }
@@ -212,99 +261,104 @@ export const ChatInterface = () => {
   ];
 
   return (
-    <Card className="h-[600px] bg-white border border-gray-200 shadow-lg">
-      <CardHeader className="bg-black text-white rounded-t-lg">
-        <CardTitle className="flex items-center gap-2">
-          <Bot className="h-5 w-5" />
-          Chat with AI Assistant
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-0 flex flex-col h-full">
-        <ScrollArea ref={scrollAreaRef} className="flex-1 p-6">
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}
-              >
-                {!message.isUser && (
-                  <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center flex-shrink-0">
-                    <Bot className="h-4 w-4 text-white" />
-                  </div>
-                )}
+    <div className="h-full w-full">
+      <Card className="h-[calc(100vh-180px)] flex flex-col border-0 shadow-none">
+        <CardHeader className="border-b bg-gradient-to-r from-pink-50 to-purple-50 flex-shrink-0">
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Bot className="w-6 h-6 text-purple-600" />
+            Chat with Perica
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+          <ScrollArea className="flex-1 h-full p-6" ref={scrollAreaRef}>
+            <div className="space-y-4 max-w-3xl mx-auto">
+              {messages.map((message) => (
                 <div
-                  className={`max-w-[80%] p-4 rounded-lg ${
-                    message.isUser
-                      ? 'bg-black text-white'
-                      : 'bg-gray-100 text-black'
-                  } animate-fade-in`}
+                  key={message.id}
+                  className={`flex gap-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}
                 >
-                  <p className="text-sm leading-relaxed">{message.content}</p>
-                  <span className="text-xs opacity-70 mt-2 block">
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
-                {message.isUser && (
-                  <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <User className="h-4 w-4 text-white" />
+                  {!message.isUser && (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                      <Bot className="w-5 h-5 text-white" />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[70%] p-4 rounded-2xl ${
+                      message.isUser
+                        ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
+                        : 'bg-gray-100 text-gray-900'
+                    } animate-fade-in`}
+                  >
+                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                   </div>
-                )}
-              </div>
-            ))}
-            {isLoading && (
-              <div className="flex gap-3 justify-start">
-                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center flex-shrink-0">
-                  <Bot className="h-4 w-4 text-white" />
+                  {message.isUser && (
+                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                      <User className="w-5 h-5 text-gray-600" />
+                    </div>
+                  )}
                 </div>
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-600 rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-gray-600 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                    <div className="w-2 h-2 bg-gray-600 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
-        
-        {messages.length === 1 && (
-          <div className="p-4 border-t border-gray-200">
-            <p className="text-sm text-gray-600 mb-3">Try asking me about:</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {suggestedQuestions.map((question, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  className="text-left justify-start h-auto p-2 text-xs border-gray-300 text-gray-700 hover:bg-gray-50"
-                  onClick={() => setInputMessage(question)}
-                >
-                  {question}
-                </Button>
               ))}
+
+              {isLoading && (
+                <div className="flex gap-3 justify-start">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                    <Bot className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="bg-gray-100 p-4 rounded-2xl">
+                    <div className="flex space-x-2">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {messages.length === 1 && !isLoading && historyLoaded && (
+                <div className="mt-8">
+                  <p className="text-sm text-gray-600 mb-3">Suggested questions:</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {suggestedQuestions.map((question, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        className="text-left justify-start h-auto py-3 px-4 hover:bg-purple-50 hover:border-purple-300"
+                        onClick={() => {
+                          setInputMessage(question);
+                        }}
+                      >
+                        {question}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+
+          <div className="border-t p-4 bg-white flex-shrink-0">
+            <div className="max-w-3xl mx-auto flex gap-2">
+              <Textarea
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask me anything about your period, cycle, or symptoms..."
+                disabled={isLoading}
+                className="flex-1 min-h-[50px] max-h-[150px] resize-none"
+              />
+              <Button
+                onClick={sendMessage}
+                disabled={!inputMessage.trim() || isLoading}
+                size="icon"
+                className="h-[50px] w-[50px] bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 flex-shrink-0"
+              >
+                <Send className="h-5 w-5" />
+              </Button>
             </div>
           </div>
-        )}
-        
-        <div className="p-4 border-t border-gray-200 flex gap-3">
-          <input
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Ask me anything about periods, cycles, or health..."
-            disabled={isLoading}
-            className="flex-1 h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black disabled:cursor-not-allowed disabled:opacity-50"
-          />
-          <Button
-            onClick={sendMessage}
-            disabled={!inputMessage.trim() || isLoading}
-            className="bg-black text-white hover:bg-gray-800"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
