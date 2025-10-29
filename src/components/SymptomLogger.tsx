@@ -19,7 +19,7 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
 
   const flowOptions = [
     { value: 'none', label: 'None', color: 'bg-gray-300' },
-    { value: 'light', label: 'Light', color: 'bg-pink-300' },
+    { value: 'light', label: 'Light', color: 'bg-gray-400' },
     { value: 'medium', label: 'Medium', color: 'bg-red-400' },
     { value: 'heavy', label: 'Heavy', color: 'bg-red-600' },
   ];
@@ -29,7 +29,7 @@ export const SymptomLogger = ({ selectedDate }: SymptomLoggerProps) => {
     { value: 'neutral', label: '😐 Neutral', color: 'bg-gray-300' },
     { value: 'sad', label: '😢 Sad', color: 'bg-blue-300' },
     { value: 'irritable', label: '😤 Irritable', color: 'bg-red-300' },
-    { value: 'anxious', label: '😰 Anxious', color: 'bg-purple-300' },
+    { value: 'anxious', label: '😰 Anxious', color: 'bg-gray-400' },
   ];
 
   const handleSave = () => {
