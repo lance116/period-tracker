@@ -262,8 +262,27 @@ serve(async (req) => {
       }
 
       if (cycles && cycles.length > 0) {
-        const recentCycles = cycles.slice(-3);
-        userContext += `Recent cycles: ${recentCycles.map(c => `${c.cycle_length || 'ongoing'} days`).join(', ')}. `;
+        // Sort to ensure most recent is last
+        const sortedCycles = [...cycles].sort((a, b) =>
+          new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+        );
+        const recentCycles = sortedCycles.slice(-3);
+
+        // Get the most recent period info prominently
+        const lastPeriod = recentCycles[recentCycles.length - 1];
+        const lastStartDate = new Date(lastPeriod.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const lastEndDate = lastPeriod.end_date ? new Date(lastPeriod.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'still ongoing';
+
+        userContext += `Last period: Started ${lastStartDate}, ended ${lastEndDate}. `;
+
+        if (recentCycles.length > 1) {
+          userContext += `Previous periods: `;
+          recentCycles.slice(0, -1).forEach((c, i) => {
+            const startDate = new Date(c.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const endDate = c.end_date ? new Date(c.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'ongoing';
+            userContext += `${startDate} to ${endDate}${i < recentCycles.length - 2 ? ', ' : '. '}`;
+          });
+        }
       }
 
       if (healthLogs && healthLogs.length > 0) {
